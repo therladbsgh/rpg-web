@@ -32,7 +32,7 @@ module.exports = {
       {
         test: /\.js?$/,
         exclude: /node_modules/,
-        loaders: ["babel-loader"],
+        loader: 'babel-loader',
       },
       {
         test: /\.html$/,
@@ -50,6 +50,10 @@ module.exports = {
         test: /p2\.js/,
         loader: 'expose-loader?p2',
       },
+      {
+        test: /phaser-arcade-slopes.min\.js$/,
+        loader: 'expose-loader?SAT',
+      }
     ],
   },
 
