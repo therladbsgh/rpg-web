@@ -1,22 +1,36 @@
 var webpack = require('webpack');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var ManifestPlugin = require('webpack-manifest-plugin');
+var ChunkManifestPlugin = require('chunk-manifest-webpack-plugin');
+var cssnext = require('postcss-cssnext');
+var postcssFocus = require('postcss-focus');
+var postcssReporter = require('postcss-reporter');
+var cssnano = require('cssnano');
 var path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 var phaserModulePath = path.join(__dirname, '/node_modules/phaser-ce/');
 
 module.exports = {
-  context: __dirname,
+  devtool: 'hidden-source-map',
 
-  entry: "./lib/js/index.js",
+  entry: {
+    app: [
+      './client/index.js',
+    ],
+    vendor: [
+      'react',
+      'react-dom',
+    ]
+  },
 
   output: {
-    filename: "bundle.js",
-    path: __dirname + "/dist",
-    publicPath: '/dist',
+    path: __dirname + '/dist/client/',
+    filename: '[name].[chunkhash].js',
+    publicPath: '/',
   },
 
   resolve: {
-    extensions: ['.js', '.json'],
+    extensions: ['.js', '.jsx', '.json'],
     modules: [
       'client',
       'node_modules',
@@ -29,11 +43,27 @@ module.exports = {
   },
 
   module: {
-    loaders: [
+    rules: [
       {
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          use: "css-loader"
+        })
+      },
+      {
+        test: /\.scss$/,
+        use: ExtractTextPlugin.extract({
+          use: "sass-loader"
+        })
+      },
+      {
+        test: /\.jsx*$/,
+        exclude: [/node_modules/, /.+\.config.js/],
+        loader: 'babel-loader',
+      }, {
         test: /\.js?$/,
         exclude: /node_modules/,
-        loaders: ["babel-loader"],
+        use: ["babel-loader"],
       },
       {
         test: /\.html$/,
@@ -51,6 +81,10 @@ module.exports = {
         test: /p2\.js/,
         loader: 'expose-loader?p2',
       },
+      {
+        test: /phaser-arcade-slopes.min\.js$/,
+        loader: 'expose-loader?SAT',
+      },
     ],
   },
 
@@ -61,10 +95,19 @@ module.exports = {
   },
 
   plugins: [
-    new HtmlWebpackPlugin({
-      title: 'My App',
-      filename: 'index.html',
-      template: 'public/index_prod.html'
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production'),
+      }
+    }),
+    new ExtractTextPlugin('app.[chunkhash].css', { allChunks: true }),
+    new ManifestPlugin({
+      basePath: '/',
+    }),
+    new ChunkManifestPlugin({
+      filename: "chunk-manifest.json",
+      manifestVariable: "webpackManifest",
     }),
   ],
+
 };

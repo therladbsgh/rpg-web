@@ -1,21 +1,35 @@
 var webpack = require('webpack');
+// var cssnext = require('postcss-cssnext');
+// var postcssFocus = require('postcss-focus');
+// var postcssReporter = require('postcss-reporter');
 var path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 var phaserModulePath = path.join(__dirname, '/node_modules/phaser-ce/');
 
 module.exports = {
   context: __dirname,
 
-  entry: "./lib/js/index.js",
+  devtool: 'cheap-module-eval-source-map',
+
+  entry: {
+    app: [
+      'eventsource-polyfill',
+      './client/index.js',
+    ],
+    vendor: [
+      'react',
+      'react-dom',
+    ],
+  },
 
   output: {
-    filename: "bundle.js",
-    path: __dirname + "/dist",
+    path: __dirname,
+    filename: '[name].js',
+    publicPath: 'http://0.0.0.0:3000/',
   },
 
   resolve: {
-    extensions: ['.js', '.json'],
+    extensions: ['.js', '.jsx', '.json'],
     modules: [
       'client',
       'node_modules',
@@ -30,9 +44,21 @@ module.exports = {
   module: {
     loaders: [
       {
+        test: /\.jsx*$/,
+        exclude: [/node_modules/, /.+\.config.js/],
+        loader: 'babel-loader',
+      }, {
         test: /\.js?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        loaders: ["babel-loader"],
+      },
+      {
+        test: /\.css$/,
+        loader: 'css-loader',
+      },
+      {
+        test: /\.scss$/,
+        loader: 'sass-loader',
       },
       {
         test: /\.html$/,
@@ -53,7 +79,7 @@ module.exports = {
       {
         test: /phaser-arcade-slopes.min\.js$/,
         loader: 'expose-loader?SAT',
-      }
+      },
     ],
   },
 
@@ -62,4 +88,5 @@ module.exports = {
     net: 'empty',
     tls: 'empty',
   },
+
 };

@@ -1,10 +1,13 @@
+var fs = require('fs');
 var path = require('path');
 var nodeExternals = require('webpack-node-externals');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+var phaserModulePath = path.join(__dirname, '/node_modules/phaser-ce/');
 
 module.exports = {
 
-  entry: path.resolve(__dirname, 'lib/server.js'),
+  entry: path.resolve(__dirname, 'server/server.js'),
 
   output: {
     path: __dirname + '/dist/',
@@ -19,11 +22,16 @@ module.exports = {
   },
 
   resolve: {
-    extensions: ['.js', '.json'],
+    extensions: ['.js', '.jsx', '.json'],
     modules: [
       'client',
       'node_modules',
     ],
+    alias: {
+      'phaser': path.join(phaserModulePath, 'build/custom/phaser-split.js'),
+      'pixi': path.join(phaserModulePath, 'build/custom/pixi.js'),
+      'p2': path.join(phaserModulePath, 'build/custom/p2.js'),
+    },
   },
 
   module: {
@@ -67,21 +75,39 @@ module.exports = {
         loader: 'url?limit=10000&mimetype=image/svg+xml'
       },
       {
-        test: /\.scss$/,
-        loaders: [ 'style', 'css', 'sass' ]
-      },
-      {
         test: /\.css$/,
-        exclude: /node_modules\/(?!(bootstrap|react-html5video)\/).*/,
-        loader: 'style-loader!css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1&sourceMap!postcss-loader',
+        use: ExtractTextPlugin.extract({
+          use: "css-loader"
+        })
       },
       {
-        test: /\.(jpe?g|gif|png|svg)$/i,
-        loader: 'url-loader?limit=10000',
+        test: /\.scss$/,
+        use: ExtractTextPlugin.extract({
+          use: "sass-loader"
+        })
+      },
+      {
+        test: /pixi\.js/,
+        loader: 'expose-loader?PIXI',
+      },
+      {
+        test: /phaser-split\.js$/,
+        loader: 'expose-loader?Phaser',
+      },
+      {
+        test: /p2\.js/,
+        loader: 'expose-loader?p2',
+      },
+      {
+        test: /phaser-arcade-slopes.min\.js$/,
+        loader: 'expose-loader?SAT',
       },
     ],
   },
 
-  externals: [nodeExternals()],
+  plugins: [
+    new ExtractTextPlugin('app.[chunkhash].css', { allChunks: true }),
+  ],
 
+  externals: [nodeExternals()],
 };
