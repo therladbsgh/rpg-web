@@ -21,3 +21,4 @@ game.state.add('Room2', new Room2(game, client));
 game.state.start('Room1');
 
 export default game;
+export const Client = client;

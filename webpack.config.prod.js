@@ -47,20 +47,23 @@ module.exports = {
       {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
-          use: "css-loader"
+          fallback: 'style-loader',
+          use: [ 'css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1' ]
         })
       },
       {
         test: /\.scss$/,
         use: ExtractTextPlugin.extract({
-          use: "sass-loader"
+          fallback: 'style-loader',
+          use: [ 'sass-loader' ]
         })
       },
       {
         test: /\.jsx*$/,
         exclude: [/node_modules/, /.+\.config.js/],
         loader: 'babel-loader',
-      }, {
+      },
+      {
         test: /\.js?$/,
         exclude: /node_modules/,
         use: ["babel-loader"],

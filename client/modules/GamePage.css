@@ -1,0 +1,21 @@
+body {
+  overflow: hidden;
+  margin: 0;
+  background-color: black;
+}
+
+.guiBox {
+  position: fixed;
+  height: 10vh;
+  width: 100vw;
+  top: 90vh;
+  background-color: #999;
+}
+
+.chatBar {
+  position: absolute;
+  height: 5vh;
+  width: 100vw;
+  top: 85vh;
+  background-color: #555;
+}

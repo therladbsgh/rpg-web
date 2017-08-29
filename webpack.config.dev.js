@@ -42,7 +42,7 @@ module.exports = {
   },
 
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.jsx*$/,
         exclude: [/node_modules/, /.+\.config.js/],
@@ -50,15 +50,15 @@ module.exports = {
       }, {
         test: /\.js?$/,
         exclude: /node_modules/,
-        loaders: ["babel-loader"],
+        use: ["babel-loader"],
       },
       {
         test: /\.css$/,
-        loader: 'css-loader',
+        loader: 'style-loader!css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1&sourceMap',
       },
       {
         test: /\.scss$/,
-        loader: 'sass-loader',
+        use: [ 'style-loader', 'sass-loader' ],
       },
       {
         test: /\.html$/,

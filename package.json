@@ -4,7 +4,7 @@
   "description": "Tripino server & web",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cross-env BABEL_DISABLE_CACHE=1 NODE_ENV=development nodemon index.js --exec babel-node",
+    "start": "cross-env BABEL_DISABLE_CACHE=1 NODE_ENV=development nodemon index.js",
     "build": "npm run webpack && npm run webpack_server",
     "bs": "npm run clean && npm run build && npm run serve",
     "webpack_server": "cross-env NODE_ENV=production webpack --config webpack.config.server.js",
