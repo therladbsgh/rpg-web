@@ -12,7 +12,7 @@ import client from './client';
 
 //noinspection JSCheckFunctionSignatures,JSCheckFunctionSignatures,JSCheckFunctionSignatures
 const game = new Phaser.Game(document.body.clientWidth,
-                             document.documentElement.clientHeight,
+                             document.documentElement.clientHeight * 0.85,
                              Phaser.AUTO,
                              document.getElementById('game'));
 

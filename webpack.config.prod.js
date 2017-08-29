@@ -48,14 +48,32 @@ module.exports = {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: [ 'css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1' ]
+          use: [
+            {
+              loader: 'css-loader',
+              options: {
+                localIdentName: '[name]__[local]__[hash:base64:5]',
+                modules: "true",
+                importLoaders: "1",
+              }
+            }
+          ]
         })
       },
       {
         test: /\.scss$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: [ 'sass-loader' ]
+          use: [
+            {
+              loader: 'sass-loader',
+              options: {
+                localIdentName: '[name]__[local]__[hash:base64:5]',
+                modules: "true",
+                importLoaders: "1",
+              }
+            }
+          ]
         })
       },
       {

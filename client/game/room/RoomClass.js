@@ -4,12 +4,14 @@ import Phaser from 'phaser';
 import ArcadeSlopes from '../assets/phaser-arcade-slopes.min';
 
 import Player from '../objects/Player';
+import Warp from '../objects/Warp';
 
 class Room {
   constructor(game, client) {
     this.game = game;
     this.client = client;
     this.playerMap = {};
+    this.warpMap = {};
   }
 
   init() {
@@ -42,6 +44,11 @@ class Room {
     downKey.onDown.add(this.client.keyBinding.down.down, this);
     downKey.onUp.add(this.client.keyBinding.down.up, this);
 
+    const enterKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+    enterKey.onDown.add(() => {
+      console.log("ENTER");
+    }, this);
+
     this.backgroundLayer = this.game.add.group();
     this.entityLayer = this.game.add.group();
     this.foregroundLayer = this.game.add.group();
@@ -71,6 +78,19 @@ class Room {
       }
     }
 
+    // Create portals
+    this.warps = this.game.add.group();
+    this.warps.enableBody = true;
+    map.objects.warps.forEach((each) => {
+      const sprite = this.game.add.sprite(each.x, each.y, 'sprite');
+      this.warps.add(sprite);
+      if (!this.warpMap[each.x]) {
+        this.warpMap[each.x] = {};
+      }
+      this.warpMap[each.x][each.y] = new Warp(each.properties.room,
+                                              each.properties.x, each.properties.y, sprite);
+    });
+
     // Debug collisions
     this.collisionLayer.visible = true;
     this.collisionLayer.debug = true;
@@ -87,8 +107,21 @@ class Room {
     const player = this.playerMap[this.client.getId()];
     if (player && player.sprite) {
       this.game.physics.arcade.collide(player.sprite, this.collisionLayer);
+      this.game.physics.arcade.overlap(player.sprite, this.warps, (user, warp) => {
+        this.warpToNewRoom(user, warp);
+      });
       player.handleMovement();
     }
+  }
+
+  warpToNewRoom(player, warp) {
+    const warpTo = this.warpMap[warp.position.x][warp.position.y];
+    this.client.goToRoom({
+      room: warpTo.room,
+      x: parseInt(warpTo.x, 10),
+      y: parseInt(warpTo.y, 10)
+    });
+    this.game.state.start(warpTo.room);
   }
 
   addNewPlayer(id, x, y) {
@@ -97,7 +130,6 @@ class Room {
     if (this.client.getId() === id) {
       this.game.camera.follow(this.playerMap[id].sprite);
     }
-    // this.guiLayer.add(this.playerMap[id].username);
   }
 
   getPlayer(id) {
